@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐾 PETVAULT · custom breed QR + scanner</title>
+  <!-- Tailwind + QR libraries + html5-qrcode scanner -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .scanner-box { border: 4px dashed #f59e0b; background: #0000000c; min-height: 220px; border-radius: 24px; }
+    .custom-badge { background: #10b981; color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.7rem; }
+    .nav-link.active { background-color: #f59e0b; color: white; border-radius: 40px; }
+  </style>
+</head>
+<body class="bg-amber-50 font-sans antialiased p-5" style="background-image: radial-gradient(circle at 20px 20px, #fcd34d 2px, transparent 2px); background-size: 50px 50px;">
+
+  <!-- main container -->
+  <div class="max-w-7xl mx-auto bg-white/95 backdrop-blur-sm rounded-[70px] shadow-2xl border-4 border-amber-400 overflow-hidden">
+
+    <!-- ========== NAVBAR (new feature) ========== -->
+    <div class="bg-gradient-to-r from-amber-600 to-amber-500 px-6 py-3 flex flex-wrap items-center justify-between text-white">
+      <div class="flex items-center gap-3 text-2xl font-black">
+        <i class="fa-solid fa-paw"></i>
+        <span>PET·VAULT</span>
+      </div>
+      
+      <!-- nav links with icons -->
+      <div class="flex gap-1 md:gap-4 text-sm md:text-base flex-wrap">
+        <a href="#" class="nav-link active px-4 py-2 hover:bg-amber-400 transition-all rounded-full" data-tab="generator"><i class="fa-regular fa-circle-dot"></i> Generator</a>
+        <a href="#" class="nav-link px-4 py-2 hover:bg-amber-400 transition-all rounded-full" data-tab="scanner"><i class="fa-solid fa-camera"></i> Scanner</a>
+        <a href="#" class="nav-link px-4 py-2 hover:bg-amber-400 transition-all rounded-full" data-tab="gallery"><i class="fa-regular fa-images"></i> Gallery</a>
+        <a href="#" class="nav-link px-4 py-2 hover:bg-amber-400 transition-all rounded-full" data-tab="help"><i class="fa-regular fa-circle-question"></i> Help</a>
+      </div>
+
+      <!-- user badge -->
+      <div class="bg-white/30 px-4 py-1 rounded-full text-sm hidden md:block">
+        <i class="fa-regular fa-user"></i> Pet Owner
+      </div>
+    </div>
+
+    <!-- ========== TAB CONTENT (generator tab visible by default) ========== -->
+    <div id="generatorTab" class="tab-content block">
+      <!-- main grid: 3 columns (pet selector + breed hybrid, form, scanner preview) -->
+      <div class="grid lg:grid-cols-12 divide-x-2 divide-amber-200 min-h-[700px]">
+        
+        <!-- LEFT COLUMN (span 4): PET SELECTOR + BREED (SELECT OR INPUT) + TRIVIA -->
+        <div class="lg:col-span-4 p-5 bg-amber-50/40 overflow-y-auto space-y-4">
+          <h2 class="text-2xl font-bold text-amber-800 border-b-4 border-amber-300 pb-2 flex gap-2"><i class="fa-solid fa-grid-2"></i> 10 POPULAR PETS</h2>
+          
+          <!-- pet type grid (10 pets) -->
+          <div class="grid grid-cols-2 gap-3" id="petTypeGrid">
+            <!-- dog -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100 selected-pet" data-pet="dog" data-icon="🐶">
+              <div class="text-3xl">🐶</div>
+              <div class="font-bold text-sm">DOG</div>
+            </div>
+            <!-- cat -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="cat" data-icon="🐱">
+              <div class="text-3xl">🐱</div>
+              <div class="font-bold text-sm">CAT</div>
+            </div>
+            <!-- goldfish -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="goldfish" data-icon="🐟">
+              <div class="text-3xl">🐟</div>
+              <div class="font-bold text-sm">GOLDFISH</div>
+            </div>
+            <!-- budgie -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="budgie" data-icon="🐦">
+              <div class="text-3xl">🐦</div>
+              <div class="font-bold text-sm">BUDGIE</div>
+            </div>
+            <!-- hamster -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="hamster" data-icon="🐹">
+              <div class="text-3xl">🐹</div>
+              <div class="font-bold text-sm">HAMSTER</div>
+            </div>
+            <!-- rabbit -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="rabbit" data-icon="🐰">
+              <div class="text-3xl">🐰</div>
+              <div class="font-bold text-sm">RABBIT</div>
+            </div>
+            <!-- turtle -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="turtle" data-icon="🐢">
+              <div class="text-3xl">🐢</div>
+              <div class="font-bold text-sm">TURTLE</div>
+            </div>
+            <!-- leopard gecko -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="gecko" data-icon="🦎">
+              <div class="text-3xl">🦎</div>
+              <div class="font-bold text-sm">LEOPARD GECKO</div>
+            </div>
+            <!-- fancy mouse -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="mouse" data-icon="🐭">
+              <div class="text-3xl">🐭</div>
+              <div class="font-bold text-sm">FANCY MOUSE</div>
+            </div>
+            <!-- cockatiel -->
+            <div class="pet-option bg-white p-3 rounded-2xl border-3 border-amber-300 cursor-pointer hover:bg-amber-100" data-pet="cockatiel" data-icon="🐦">
+              <div class="text-3xl">🐦</div>
+              <div class="font-bold text-sm">COCKATIEL</div>
+            </div>
+          </div>
+
+          <!-- BREED SELECTOR + CUSTOM INPUT (HYBRID) -->
+          <div class="bg-white p-4 rounded-3xl border-2 border-amber-300 mt-4">
+            <h3 class="font-extrabold text-lg flex gap-2"><i class="fa-solid fa-list"></i> <span id="selectedPetName">DOG</span> BREEDS & TRIVIA</h3>
+            
+            <!-- radio toggle: choose from list OR type custom -->
+            <div class="flex gap-4 my-3 text-sm">
+              <label class="flex items-center gap-1"><input type="radio" name="breedMode" value="select" checked> <i class="fa-regular fa-list"></i> Choose from list</label>
+              <label class="flex items-center gap-1"><input type="radio" name="breedMode" value="custom"> <i class="fa-regular fa-keyboard"></i> Type custom</label>
+            </div>
+
+            <!-- SELECT DROPDOWN (visible when mode = select) -->
+            <select id="breedSelect" class="w-full p-3 border-2 border-amber-300 rounded-2xl my-2 bg-amber-50 font-medium">
+              <!-- filled by js -->
+            </select>
+
+            <!-- CUSTOM INPUT (visible when mode = custom) -->
+            <input type="text" id="customBreedInput" placeholder="Enter breed name (e.g. Mixed, Puggle, Mutt)" class="w-full p-3 border-2 border-amber-300 rounded-2xl my-2 hidden" value="">
+
+            <!-- trivia card (dynamic) -->
+            <div id="triviaCard" class="bg-amber-100 p-4 rounded-2xl border border-amber-400 text-sm italic mt-3">
+              <i class="fa-regular fa-star"></i> <span id="triviaText">Select a breed or type custom to see info</span>
+            </div>
+
+            <!-- quick care tip -->
+            <div id="careTip" class="mt-3 text-xs bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+              💚 <span id="careTipText">Dogs need daily walks and fresh water.</span>
+            </div>
+
+            <!-- custom badge appears when custom breed entered -->
+            <div id="customBadgeContainer" class="mt-2 hidden"><span class="custom-badge"><i class="fa-regular fa-pen-to-square"></i> custom breed</span></div>
+          </div>
+
+          <!-- extra fun fact -->
+          <div class="bg-gradient-to-r from-amber-100 to-yellow-50 p-3 rounded-2xl text-xs">
+            <span class="font-bold">🐾 Did you know?</span> <span id="randomFunFact">A dog's nose print is unique as a human fingerprint.</span>
+          </div>
+        </div>
+
+        <!-- MIDDLE COLUMN (span 4): FORM + QR + DOWNLOAD -->
+        <div class="lg:col-span-4 p-6 bg-white flex flex-col gap-5">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-3xl text-amber-600"></i>
+            <h2 class="text-2xl font-bold text-amber-800">PET & OWNER DETAILS</h2>
+          </div>
+
+          <!-- dynamic pet icon + name preview -->
+          <div class="flex items-center gap-4 bg-amber-50 p-3 rounded-full">
+            <div id="selectedPetIcon" class="text-6xl">🐶</div>
+            <div><span class="text-sm">selected pet</span><br><span id="selectedPetNameDisplay" class="font-black text-xl">DOG</span></div>
+          </div>
+
+          <!-- form fields (required) -->
+          <div class="space-y-3">
+            <div>
+              <label class="block font-semibold"><i class="fa-regular fa-signature"></i> PET'S NAME *</label>
+              <input type="text" id="petName" placeholder="e.g. Max, Luna, Tweety" class="w-full p-3 border-2 border-amber-300 rounded-2xl" value="">
+              <p class="text-xs text-red-500 hidden" id="errorPetName">required</p>
+            </div>
+            <div>
+              <label class="block font-semibold"><i class="fa-regular fa-id-card"></i> BREED / SPECIES *</label>
+              <input type="text" id="petBreedDisplay" readonly class="w-full p-3 bg-gray-100 border-2 border-amber-200 rounded-2xl" value="German Shepherd">
+              <p class="text-xs text-gray-400">auto-filled from breed selection or custom entry</p>
+            </div>
+            <div>
+              <label class="block font-semibold"><i class="fa-solid fa-user"></i> OWNER NAME *</label>
+              <input type="text" id="ownerName" placeholder="Full name" class="w-full p-3 border-2 border-amber-300 rounded-2xl" value="">
+              <p class="text-xs text-red-500 hidden" id="errorOwner">required</p>
+            </div>
+            <div>
+              <label class="block font-semibold"><i class="fa-solid fa-phone"></i> PHONE NUMBER *</label>
+              <input type="tel" id="ownerPhone" placeholder="+1 555 123 4567" class="w-full p-3 border-2 border-amber-300 rounded-2xl" value="">
+              <p class="text-xs text-red-500 hidden" id="errorPhone">required</p>
+            </div>
+            <div>
+              <label class="block font-semibold"><i class="fa-solid fa-microchip"></i> MICROCHIP / ID (optional)</label>
+              <input type="text" id="chipId" placeholder="e.g. 985112003456789" class="w-full p-3 border-2 border-amber-300 rounded-2xl" value="">
+            </div>
+          </div>
+
+          <button id="generateBtn" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-4 rounded-3xl text-xl shadow-xl flex items-center justify-center gap-3 border-b-4 border-amber-800 active:border-b-0">
+            <i class="fa-solid fa-qrcode"></i> GENERATE PET QR
+          </button>
+          <div id="validationSummary" class="text-sm text-red-600 hidden bg-red-100 p-2 rounded-xl"></div>
+
+          <!-- QR and download -->
+          <div class="flex flex-col items-center mt-4">
+            <div id="qrContainer" class="bg-white p-3 rounded-[40px] border-8 border-amber-300 max-w-[200px]">
+              <div id="qrcode"></div>
+            </div>
+            <button id="downloadQrBtn" class="mt-3 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-full text-lg w-full flex items-center justify-center gap-2 disabled:opacity-50" disabled>
+              <i class="fa-solid fa-download"></i> DOWNLOAD QR PNG
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN (span 4): PREVIEW SCANNER (always visible in generator) -->
+        <div class="lg:col-span-4 p-6 bg-amber-50/70 flex flex-col gap-5">
+          <h3 class="text-2xl font-bold text-amber-800 flex gap-2"><i class="fa-solid fa-camera"></i> QUICK SCANNER</h3>
+          <div id="qr-reader" class="scanner-box"></div>
+          <div id="scanResult" class="bg-white p-3 rounded-2xl border border-amber-300 text-xs break-words max-h-32 overflow-auto">waiting for scan...</div>
+          <button id="startScannerBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-full"><i class="fa-solid fa-play"></i> RESTART SCANNER</button>
+          
+          <!-- mini gallery preview (nav feature) -->
+          <div class="bg-amber-100 p-3 rounded-2xl border border-amber-300 text-xs mt-2">
+            <span class="font-bold"><i class="fa-regular fa-images"></i> Recent QR codes:</span>
+            <div class="flex gap-2 mt-2">
+              <div class="w-8 h-8 bg-amber-300 rounded flex items-center justify-center text-lg">🐕</div>
+              <div class="w-8 h-8 bg-amber-300 rounded flex items-center justify-center text-lg">🐈</div>
+              <div class="w-8 h-8 bg-amber-300 rounded flex items-center justify-center text-lg">🐦</div>
+              <div class="w-8 h-8 bg-amber-300 rounded flex items-center justify-center text-lg">🐟</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== OTHER TABS (hidden initially) ========== -->
+    <div id="scannerTab" class="tab-content hidden p-10 text-center">
+      <i class="fa-solid fa-camera text-8xl text-amber-400 mb-4"></i>
+      <h2 class="text-3xl font-bold">Scanner Page</h2>
+      <p class="text-lg mt-2">Dedicated scanner interface (full page coming soon).</p>
+      <p class="text-sm text-gray-500 mt-4">You can still use the scanner in generator tab.</p>
+    </div>
+
+    <div id="galleryTab" class="tab-content hidden p-10 text-center">
+      <i class="fa-regular fa-images text-8xl text-amber-400 mb-4"></i>
+      <h2 class="text-3xl font-bold">Gallery</h2>
+      <p class="text-lg mt-2">Your saved pet QR codes will appear here.</p>
+      <div class="flex gap-4 justify-center mt-6">
+        <div class="w-20 h-20 bg-amber-200 rounded-2xl flex items-center justify-center text-4xl">🐶</div>
+        <div class="w-20 h-20 bg-amber-200 rounded-2xl flex items-center justify-center text-4xl">🐱</div>
+        <div class="w-20 h-20 bg-amber-200 rounded-2xl flex items-center justify-center text-4xl">🐦</div>
+      </div>
+    </div>
+
+    <div id="helpTab" class="tab-content hidden p-10">
+      <i class="fa-regular fa-circle-question text-8xl text-amber-400 mb-4 text-center block"></i>
+      <h2 class="text-3xl font-bold text-center">Help & Info</h2>
+      <div class="max-w-2xl mx-auto mt-6 space-y-4 text-left">
+        <p>🔸 <strong>How to use:</strong> Select pet type, then choose a breed or type custom. Fill required fields and generate QR.</p>
+        <p>🔸 <strong>Custom breed:</strong> Switch to "Type custom" and enter any breed name. Trivia becomes general care tip.</p>
+        <p>🔸 <strong>Scanning:</strong> Use the built-in scanner to read any pet QR.</p>
+        <p>🔸 <strong>Download:</strong> After generating, click download to save PNG.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCRIPT (breed DB + hybrid + navbar tabs) ========== -->
+  <script>
+    (function() {
+      // ---------- BREED DATABASE (same as before) ----------
+      const BREED_DB = {
+        dog: { name: "DOG", icon: "🐶", care: "Dogs need daily walks, training, and fresh water.", breeds: [
+          { name: "German Shepherd", trivia: "German Shepherds were originally bred for herding sheep." },
+          { name: "Shih Tzu", trivia: "Shih Tzu means 'little lion' in Chinese. They were bred to sit on the laps of Chinese emperors." },
+          { name: "Labrador Retriever", trivia: "Labs are the most popular breed in the USA. They have webbed feet for swimming." },
+          { name: "Golden Retriever", trivia: "Golden Retrievers are known for their gentle mouth, able to carry an egg without breaking it." },
+          { name: "Poodle", trivia: "Poodles come in three sizes: standard, miniature, and toy. They are excellent swimmers." }
+        ]},
+        cat: { name: "CAT", icon: "🐱", care: "Cats need vertical space, scratching posts, and interactive play.", breeds: [
+          { name: "Siamese", trivia: "Siamese cats are one of the oldest and most recognizable Asian cat breeds." },
+          { name: "Persian", trivia: "Persian cats have long, luxurious coats and need daily grooming." },
+          { name: "Maine Coon", trivia: "Maine Coons are one of the largest domesticated cat breeds, known for their dog-like personalities." }
+        ]},
+        goldfish: { name: "GOLDFISH", icon: "🐟", care: "Goldfish need a filtered tank, not a bowl; they can grow large.", breeds: [
+          { name: "Common Goldfish", trivia: "Common goldfish can live up to 20 years with proper care." }
+        ]},
+        budgie: { name: "BUDGIE", icon: "🐦", care: "Budgies need social interaction, toys, and a varied diet.", breeds: [
+          { name: "American Budgie", trivia: "American budgies are smaller and bred for shows; they're calm." }
+        ]},
+        hamster: { name: "HAMSTER", icon: "🐹", care: "Hamsters need wheels, tunnels, and bedding for burrowing.", breeds: [
+          { name: "Syrian Hamster", trivia: "Syrian hamsters are solitary and must live alone; they're the largest breed." }
+        ]},
+        rabbit: { name: "RABBIT", icon: "🐰", care: "Rabbits need hay, space to hop, and chew toys.", breeds: [
+          { name: "Holland Lop", trivia: "Holland Lops have floppy ears and are one of the most popular rabbit breeds." }
+        ]},
+        turtle: { name: "TURTLE", icon: "🐢", care: "Turtles need UVB lighting, aquatic or terrestrial setup depending on species.", breeds: [
+          { name: "Red-eared Slider", trivia: "Red-eared sliders are aquatic turtles with red marks behind eyes." }
+        ]},
+        gecko: { name: "LEOPARD GECKO", icon: "🦎", care: "Leopard geckos need heat mats, hides, and mealworms.", breeds: [
+          { name: "Normal/Wild Type", trivia: "Wild leopard geckos have yellow bodies with black spots." }
+        ]},
+        mouse: { name: "FANCY MOUSE", icon: "🐭", care: "Mice need wheel, nesting material, and same-sex pairs.", breeds: [
+          { name: "Standard Fancy", trivia: "Fancy mice come in over 40 colors and patterns." }
+        ]},
+        cockatiel: { name: "COCKATIEL", icon: "🐦", care: "Cockatiels need spacious cage, toys, and social time.", breeds: [
+          { name: "Grey Cockatiel", trivia: "Grey is the natural wild-type coloration, with orange cheek patches." }
+        ]}
+      };
+
+      // DOM elements
+      const petOptions = document.querySelectorAll('.pet-option');
+      const breedSelect = document.getElementById('breedSelect');
+      const customBreedInput = document.getElementById('customBreedInput');
+      const modeRadios = document.getElementsByName('breedMode');
+      const triviaText = document.getElementById('triviaText');
+      const careTipText = document.getElementById('careTipText');
+      const selectedPetName = document.getElementById('selectedPetName');
+      const selectedPetNameDisplay = document.getElementById('selectedPetNameDisplay');
+      const selectedPetIcon = document.getElementById('selectedPetIcon');
+      const petBreedDisplay = document.getElementById('petBreedDisplay');
+      const customBadgeContainer = document.getElementById('customBadgeContainer');
+
+      // form inputs
+      const petNameInp = document.getElementById('petName');
+      const ownerInp = document.getElementById('ownerName');
+      const phoneInp = document.getElementById('ownerPhone');
+      const chipInp = document.getElementById('chipId');
+      
+      // error & validation
+      const errPetName = document.getElementById('errorPetName');
+      const errOwner = document.getElementById('errorOwner');
+      const errPhone = document.getElementById('errorPhone');
+      const validationSummary = document.getElementById('validationSummary');
+
+      // QR & download
+      const qrcodeDiv = document.getElementById('qrcode');
+      const downloadBtn = document.getElementById('downloadQrBtn');
+      const generateBtn = document.getElementById('generateBtn');
+
+      // scanner
+      const scanResultDiv = document.getElementById('scanResult');
+      const startScanBtn = document.getElementById('startScannerBtn');
+      let html5QrCode = null;
+      let lastQrDataUrl = null;
+      let currentPetKey = 'dog';
+
+      // Helper functions
+      function selectPet(petKey) {
+        currentPetKey = petKey;
+        const petData = BREED_DB[petKey];
+        selectedPetIcon.innerText = petData.icon;
+        selectedPetName.innerText = petData.name;
+        selectedPetNameDisplay.innerText = petData.name;
+        careTipText.innerText = petData.care;
+
+        breedSelect.innerHTML = '';
+        petData.breeds.forEach((b, index) => {
+          const option = document.createElement('option');
+          option.value = b.name;
+          option.textContent = b.name;
+          if (index === 0) option.selected = true;
+          breedSelect.appendChild(option);
+        });
+
+        if (modeRadios[0].checked) updateTriviaAndBreedFromSelect();
+        else updateTriviaForCustom();
+      }
+
+      function updateTriviaAndBreedFromSelect() {
+        const selectedBreedName = breedSelect.value;
+        const petData = BREED_DB[currentPetKey];
+        const breedObj = petData.breeds.find(b => b.name === selectedBreedName) || petData.breeds[0];
+        triviaText.innerText = breedObj.trivia;
+        petBreedDisplay.value = breedObj.name;
+        customBadgeContainer.classList.add('hidden');
+      }
+
+      function updateTriviaForCustom() {
+        const customVal = customBreedInput.value.trim();
+        if (customVal !== '') {
+          petBreedDisplay.value = customVal;
+          triviaText.innerText = `✨ ${customVal} (custom breed) — general care: ${BREED_DB[currentPetKey].care.split('.')[0]}.`;
+          customBadgeContainer.classList.remove('hidden');
+        } else {
+          petBreedDisplay.value = '?';
+          triviaText.innerText = 'Enter a custom breed above.';
+          customBadgeContainer.classList.add('hidden');
+        }
+      }
+
+      function toggleMode() {
+        if (modeRadios[0].checked) {
+          breedSelect.classList.remove('hidden');
+          customBreedInput.classList.add('hidden');
+          customBadgeContainer.classList.add('hidden');
+          updateTriviaAndBreedFromSelect();
+        } else {
+          breedSelect.classList.add('hidden');
+          customBreedInput.classList.remove('hidden');
+          updateTriviaForCustom();
+        }
+      }
+
+      // Event listeners
+      modeRadios[0].addEventListener('change', toggleMode);
+      modeRadios[1].addEventListener('change', toggleMode);
+      breedSelect.addEventListener('change', updateTriviaAndBreedFromSelect);
+      customBreedInput.addEventListener('input', updateTriviaForCustom);
+
+      petOptions.forEach(opt => {
+        opt.addEventListener('click', function() {
+          petOptions.forEach(o => o.classList.remove('selected-pet', 'bg-amber-200', 'border-amber-600'));
+          this.classList.add('selected-pet', 'bg-amber-200', 'border-amber-600');
+          selectPet(this.dataset.pet);
+        });
+      });
+
+      // validation and QR (simplified)
+      function validateForm() {
+        let valid = true;
+        [errPetName, errOwner, errPhone].forEach(e => e.classList.add('hidden'));
+        if (!petNameInp.value.trim()) { errPetName.classList.remove('hidden'); valid = false; }
+        if (!ownerInp.value.trim()) { errOwner.classList.remove('hidden'); valid = false; }
+        if (!phoneInp.value.trim()) { errPhone.classList.remove('hidden'); valid = false; }
+        validationSummary.classList.toggle('hidden', valid);
+        validationSummary.innerText = valid ? '' : '❌ Fill required fields';
+        return valid;
+      }
+
+      function collectData() {
+        return {
+          petType: currentPetKey,
+          petName: petNameInp.value.trim() || '—',
+          breed: petBreedDisplay.value,
+          owner: ownerInp.value.trim() || '—',
+          phone: phoneInp.value.trim() || '—',
+          chip: chipInp.value.trim() || '',
+          trivia: triviaText.innerText,
+          timestamp: new Date().toLocaleString()
+        };
+      }
+
+      function generateQR() {
+        if (!validateForm()) {
+          qrcodeDiv.innerHTML = '';
+          downloadBtn.disabled = true;
+          lastQrDataUrl = null;
+          return;
+        }
+        const data = collectData();
+        qrcodeDiv.innerHTML = '';
+        new QRCode(qrcodeDiv, {
+          text: JSON.stringify(data, null, 2),
+          width: 180,
+          height: 180,
+          colorDark: '#2d2d2d',
+          colorLight: '#fff9e6'
+        });
+        setTimeout(() => {
+          const canvas = qrcodeDiv.querySelector('canvas');
+          if (canvas) { lastQrDataUrl = canvas.toDataURL('image/png'); downloadBtn.disabled = false; }
+        }, 120);
+      }
+
+      function downloadQR() {
+        if (lastQrDataUrl) {
+          const link = document.createElement('a');
+          link.download = `pet-${Date.now()}.png`;
+          link.href = lastQrDataUrl;
+          link.click();
+        }
+      }
+
+      // scanner
+      function startScanner() {
+        if (html5QrCode) html5QrCode.stop().then(() => startInstance()).catch(() => startInstance());
+        else startInstance();
+      }
+      function startInstance() {
+        if (!document.getElementById('qr-reader')) return;
+        html5QrCode = new Html5Qrcode("qr-reader");
+        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 },
+          txt => scanResultDiv.innerHTML = `<span class='text-green-700'>✅</span> ${txt}`,
+          () => {}).catch(e => scanResultDiv.innerHTML = `Scanner error`);
+      }
+
+      // Navbar tabs
+      const navLinks = document.querySelectorAll('.nav-link');
+      const tabs = {
+        generator: document.getElementById('generatorTab'),
+        scanner: document.getElementById('scannerTab'),
+        gallery: document.getElementById('galleryTab'),
+        help: document.getElementById('helpTab')
+      };
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          navLinks.forEach(l => l.classList.remove('active', 'bg-amber-400'));
+          link.classList.add('active', 'bg-amber-400');
+          
+          const tabId = link.dataset.tab;
+          Object.values(tabs).forEach(tab => tab.classList.add('hidden'));
+          if (tabId === 'generator') tabs.generator.classList.remove('hidden');
+          if (tabId === 'scanner') tabs.scanner.classList.remove('hidden');
+          if (tabId === 'gallery') tabs.gallery.classList.remove('hidden');
+          if (tabId === 'help') tabs.help.classList.remove('hidden');
+        });
+      });
+
+      // Initialize
+      document.querySelector('[data-pet="dog"]').classList.add('selected-pet', 'bg-amber-200', 'border-amber-600');
+      selectPet('dog');
+      generateBtn.addEventListener('click', (e) => { e.preventDefault(); generateQR(); });
+      downloadBtn.addEventListener('click', downloadQR);
+      startScanBtn.addEventListener('click', startScanner);
+      setTimeout(startScanner, 1500);
+    })();
+  </script>
+</body>
+</html>
