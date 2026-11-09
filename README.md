@@ -42,3 +42,7 @@ Camera scanning requires HTTPS or localhost and browser permission. Camera acces
 ## Verification
 
 `npm run build` runs strict TypeScript checking and the production Vite build. Test camera permission, rear-camera scanning, and printed QR readability on the target device before distributing tags.
+
+## GitHub Pages deployment
+
+In repository Settings > Pages, keep Source set to GitHub Actions. The included `.github/workflows/deploy.yml` installs dependencies, type-checks and builds the app, then deploys `dist/` on pushes to `main`. Commit the source files and `package-lock.json`; the generated `dist/` directory stays ignored. No template selection or manual upload of `dist/` is required. You can also trigger the workflow from the Actions tab using Run workflow.
