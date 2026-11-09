@@ -6,7 +6,7 @@ export const pets: PetDefinition[] = [
  { id:'budgie',name:'Budgie',care:'Offer social interaction, safe toys, and a varied diet.',breeds:[{name:'American Budgie',trivia:'Budgies are small parrots native to Australia.'}] },
  { id:'hamster',name:'Hamster',care:'Provide deep bedding, an appropriate exercise wheel, and hiding places.',breeds:[{name:'Syrian Hamster',trivia:'Adult Syrian hamsters are solitary animals.'}] },
  { id:'rabbit',name:'Rabbit',care:'Offer abundant hay, room to move, and safe chewing materials.',breeds:[{name:'Holland Lop',trivia:'Holland Lops are recognized by their drooping ears.'}] },
- { id:'turtle',name:'Turtle',care:'Match lighting, temperature, and habitat to the turtle’s species.',breeds:[{name:'Red-eared Slider',trivia:'Red-eared sliders have distinctive markings behind their eyes.'}] },
+ { id:'turtle',name:'Turtle',care:'Match lighting, temperature, and habitat to the turtleâ€™s species.',breeds:[{name:'Red-eared Slider',trivia:'Red-eared sliders have distinctive markings behind their eyes.'}] },
  { id:'gecko',name:'Leopard gecko',care:'Provide a suitable temperature gradient and secure hiding places.',breeds:[{name:'Normal / Wild Type',trivia:'Wild-type leopard geckos have dark spots on a yellow background.'}] },
  { id:'mouse',name:'Fancy mouse',care:'Provide nesting material, enrichment, and species-appropriate housing.',breeds:[{name:'Standard Fancy',trivia:'Fancy mice come in many coat colors and patterns.'}] },
  { id:'cockatiel',name:'Cockatiel',care:'Provide a spacious enclosure, enrichment, and daily social time.',breeds:[{name:'Grey Cockatiel',trivia:'Grey cockatiels have distinctive orange cheek patches.'}] },
